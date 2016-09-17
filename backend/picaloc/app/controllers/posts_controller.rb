@@ -18,7 +18,6 @@ class PostsController < ApplicationController
       else
         render json: @post.errors, status: :unprocessable_entity
       end
-    else
     end
   end
 
