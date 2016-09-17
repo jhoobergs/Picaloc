@@ -3,19 +3,28 @@ package be.tomberndjesse.picaloc;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -23,7 +32,7 @@ import java.util.Date;
 /**
  * Created by jesse on 17/09/2016.
  */
-public class LoggedInActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class BaseActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private boolean mRequestingLocationUpdates = true;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
@@ -32,16 +41,45 @@ public class LoggedInActivity extends AppCompatActivity implements GoogleApiClie
 
     SensorDataInterface sensorDataInterface;
 
+    private FrameLayout frameLayout;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // User is signed in
+            // Name, email address, and profile photo Url
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            Uri photoUrl = user.getPhotoUrl();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            String uid = user.getUid();
+            user.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    Log.d("testtoken", task.getResult().getToken());
+                }
+            });
+
         } else {
             startActivity(new Intent(this, SignInActivity.class));
             finish();
         }
+
+        super.setContentView(R.layout.activity_base);
+        frameLayout = (FrameLayout) findViewById(R.id.frame);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        getLayoutInflater().inflate(layoutResID, frameLayout);
     }
 
     public void enableLocationUpdates(int interval, int fastestInterval) {
@@ -126,5 +164,13 @@ public class LoggedInActivity extends AppCompatActivity implements GoogleApiClie
     protected void onDestroy() {
         super.onDestroy();
         stopLocationUpdates();
+    }
+
+    public void showProgressBar(){
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar(){
+        progressBar.setVisibility(View.GONE);
     }
 }

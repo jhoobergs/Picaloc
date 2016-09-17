@@ -3,6 +3,7 @@ package be.tomberndjesse.picaloc.Retrofit;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
@@ -11,8 +12,11 @@ import retrofit2.http.POST;
  */
 public interface PostClient {
     @POST("/posts/get")
-    Call<List<Post>> getPosts(PostLocation location);
+    Call<List<Post>> getPosts(@Body PostLocation location);
 
     @POST("/posts/add")
-    Call<Empty> addPost(Post post);
+    Call<Empty> addPost(@Body Post post);
+
+    @POST("/user/location")
+    Call<Empty> setLocation(@Body PostLocation location);
 }
