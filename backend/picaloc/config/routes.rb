@@ -5,5 +5,4 @@ Rails.application.routes.draw do
 
   post 'posts/add', to: 'posts#create'
   post 'posts/get', to: 'posts#index'
-  patch 'user_locations/', to: 'user_locations#update'
 end
