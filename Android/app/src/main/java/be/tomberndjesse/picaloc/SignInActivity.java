@@ -36,6 +36,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            startActivity(new Intent(this, TakePictureActivity.class));
+            finish();
+        }
+
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override

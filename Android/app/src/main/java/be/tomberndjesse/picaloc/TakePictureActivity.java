@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,6 +57,8 @@ public class TakePictureActivity extends LoggedInActivity {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle unsuccessful uploads TODO
+                        Toast.makeText(getApplicationContext(), "Failed uploading",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -63,6 +66,9 @@ public class TakePictureActivity extends LoggedInActivity {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         Log.d("test", downloadUrl.toString());
+                        Toast.makeText(getApplicationContext(), "Uploaded",
+                                Toast.LENGTH_SHORT).show();
+                        dispatchTakePictureIntent();
                     }
                 });
 
