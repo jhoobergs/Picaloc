@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "798212887161",
+    "firebase_url": "https://picaloc-2acb6.firebaseio.com",
+    "project_id": "picaloc-2acb6",
+    "storage_bucket": "picaloc-2acb6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798212887161:android:a5973f9d893d6022",
+        "android_client_info": {
+          "package_name": "be.tomberndjesse.picaloc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798212887161-qhfmf1vgsq4kkjj4u71tom7402pj56v0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "be.tomberndjesse.picaloc",
+            "certificate_hash": "5231F3CD658E258BC9CCD95893EDBE5D4E440ADC"
+          }
+        },
+        {
+          "client_id": "798212887161-85bsnhretavetp8anjkp6h369j9b905o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtWLThPXNpJvfN1ECpmV9UanJclRCturE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798212887161-85bsnhretavetp8anjkp6h369j9b905o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
