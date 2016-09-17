@@ -1,42 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="picaloc">
   <head>
     <meta charset="utf-8">
     <title>Picaloc</title>
     <!-- Not present in the tutorial. Just for basic styling. -->
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <!--<script src="https://unpkg.com/react@15.3.0/dist/react.js"></script>-->
-    <!--<script src="https://unpkg.com/react-dom@15.3.0/dist/react-dom.js"></script>-->
-    <script src="bower_components/react/react.js"></script>
-    <script src="bower_components/react/react-dom.js"></script>
-    <!--<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
-    <script src="bower_components/babel-standalone/babel.min.js"></script>
-    <!--<script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>-->
+
+    <base href="/">
+
+    <script src='bower_components/lodash/lodash.js'></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+    <script src='bower_components/angular-simple-logger/dist/angular-simple-logger.js'></script>
+    <script src='bower_components/angular-google-maps/dist/angular-google-maps.js'></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <!--<script src="https://unpkg.com/remarkable@1.6.2/dist/remarkable.min.js"></script>-->
-    <script src="bower_components/remarkable/dist/remarkable.min.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
   </head>
-  <body>
+  <body ng-controller="appController" style="background-color: #f7f7f7">
     <nav class="navbar navbar-default">
-      <div class="container-fluid">
+      <div class="container-fluid dark-blue-back">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" style="color: #f7f7f7; font-size: 22px" href="#">
+            <img style="height: 120%; display: inline" src="logo.svg">
             Picaloc
           </a>
         </div>
+        <div class="nav navbar-nav navbar-right">
+          <button class="btn navbar-btn" onclick="logout()">
+            Log out <span class="glyphicon glyphicon-log-out"></span>
+          </button>
+        </div>
       </div>
     </nav>
-    <div id="content">
-    <!--<script type="text/babel" src="scripts/example.js"></script>-->
-      <div class="row" style="width:100%">
-        <div id="map" class="col-lg-8 col-md-8" style="height:500px"></div>
-        <div id="thumbnails" class="col-lg-4 col-md-4 pull-right" style="height:500px"></div>
-      </div>
-      <script type="text/babel" src="scripts/main.js"></script>
-      <script src="scripts/map.js"></script>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc0dxPV8-Sw-MrP62UXvtYLNshTx5djYk&callback=initMap" async defer></script>
-    </div>
+    <div ui-view></div>
+
+    <script src="app/app.module.js"></script>
+    <script src="app/app.config.js"></script>
+  <script src="app/app.controller.js"></script>
+
+    <script src="app/common/location.service.js"></script>
+
+  <script src="app/overview/map.directive.js"></script>
+  <script src="app/overview/overview.controller.js"></script>
+    <script src="app/overview/thumbnails.service.js"></script>
+
+  <script src="app/login/login.controller.js"></script>
   </body>
 </html>

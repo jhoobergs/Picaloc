@@ -1,0 +1,15 @@
+<main>
+    <div ng-controller="overviewController">
+        <div class="row">
+            <div map location="location" class="col-lg-8 col-md-8 col-sm-8"></div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <div class="thumb-container">
+                    <div class="thumb dark-blue-back" style="height: 230px; width: 200px;" ng-repeat="thumb in thumbs">
+                        <img src="image.png" style="height: 180px; width: 180px; margin: 10px">
+                        <span style="color: whitesmoke; margin: 0 10px">{{thumb.title}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
