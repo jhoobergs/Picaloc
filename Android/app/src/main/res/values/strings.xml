@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Picaloc</string>
+    <string name="signed_in_fmt">Signed in: %s</string>
 </resources>
