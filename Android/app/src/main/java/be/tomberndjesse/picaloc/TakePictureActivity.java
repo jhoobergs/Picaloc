@@ -2,8 +2,10 @@ package be.tomberndjesse.picaloc;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,9 +22,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +36,8 @@ import java.util.Date;
 public class TakePictureActivity extends LoggedInActivity {
     private ImageView mImageView;
     private Button mUploadButton;
+    private Button mTakePicture;
+    private Button mSignOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +45,11 @@ public class TakePictureActivity extends LoggedInActivity {
         setContentView(R.layout.activity_take_picture);
         mImageView = (ImageView) findViewById(R.id.taken_image);
         mUploadButton = (Button) findViewById(R.id.upload_image);
+        mUploadButton.setVisibility(View.GONE);
         mUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mUploadButton.setVisibility(View.GONE);
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 // Create a storage reference from our app
                 StorageReference storageRef = storage.getReferenceFromUrl("gs://picaloc-2acb6.appspot.com");
@@ -50,7 +58,7 @@ public class TakePictureActivity extends LoggedInActivity {
                 StorageReference imagesRef = storageRef.child("images");
 
                 StorageReference riversRef = storageRef.child("images/"+photoURI.getLastPathSegment());
-                UploadTask uploadTask = riversRef.putFile(photoURI);
+                final UploadTask uploadTask = riversRef.putFile(photoURI);
 
                 // Register observers to listen for when the download is done or if it fails
                 uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -59,6 +67,7 @@ public class TakePictureActivity extends LoggedInActivity {
                         // Handle unsuccessful uploads TODO
                         Toast.makeText(getApplicationContext(), "Failed uploading",
                                 Toast.LENGTH_SHORT).show();
+                        mUploadButton.setVisibility(View.VISIBLE);
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -68,13 +77,29 @@ public class TakePictureActivity extends LoggedInActivity {
                         Log.d("test", downloadUrl.toString());
                         Toast.makeText(getApplicationContext(), "Uploaded",
                                 Toast.LENGTH_SHORT).show();
-                        dispatchTakePictureIntent();
                     }
                 });
 
             }
         });
-        dispatchTakePictureIntent();
+
+        mTakePicture = (Button) findViewById(R.id.take_image);
+        mTakePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent();
+            }
+        });
+
+        mSignOut = (Button) findViewById(R.id.sign_out);
+        mSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                finish();
+            }
+        });
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -107,7 +132,9 @@ public class TakePictureActivity extends LoggedInActivity {
             Bitmap imageBitmap = null;
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoURI);
-                mImageView.setImageBitmap(imageBitmap);
+                Picasso.with(this).load(photoURI).rotate(90).into(mImageView);
+                //mImageView.setImageBitmap(imageOrientationValidator(imageBitmap, photoURI.getPath()));
+                mUploadButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -127,5 +154,44 @@ public class TakePictureActivity extends LoggedInActivity {
         );
 
         return image;
+    }
+
+    private Bitmap imageOrientationValidator(Bitmap bitmap, String path) {
+
+        ExifInterface ei;
+        try {
+            ei = new ExifInterface(path);
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    bitmap = rotateImage(bitmap, 90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    bitmap = rotateImage(bitmap, 180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    bitmap = rotateImage(bitmap, 270);
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;
+    }
+
+    private Bitmap rotateImage(Bitmap source, float angle) {
+
+        Bitmap bitmap = null;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        try {
+            bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                    matrix, true);
+        } catch (OutOfMemoryError err) {
+            err.printStackTrace();
+        }
+        return bitmap;
     }
 }
