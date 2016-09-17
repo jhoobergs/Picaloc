@@ -29,6 +29,9 @@ import com.google.firebase.auth.GetTokenResult;
 import java.text.DateFormat;
 import java.util.Date;
 
+import be.tomberndjesse.picaloc.utils.SettingsUtil;
+import be.tomberndjesse.picaloc.utils.SharedPreferencesKeys;
+
 /**
  * Created by jesse on 17/09/2016.
  */
@@ -61,7 +64,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
             user.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                 @Override
                 public void onComplete(@NonNull Task<GetTokenResult> task) {
-                    Log.d("testtoken", task.getResult().getToken());
+                    new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, task.getResult().getToken());
                 }
             });
 

@@ -1,30 +1,39 @@
 package be.tomberndjesse.picaloc;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.phenotype.Configuration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,28 +46,24 @@ import be.tomberndjesse.picaloc.Retrofit.Post;
 import be.tomberndjesse.picaloc.Retrofit.PostClient;
 import be.tomberndjesse.picaloc.Retrofit.PostLocation;
 import be.tomberndjesse.picaloc.Retrofit.ServiceGenerator;
-import be.tomberndjesse.picaloc.utils.SettingsUtil;
-import be.tomberndjesse.picaloc.utils.SharedPreferencesKeys;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TakePictureActivity extends BaseActivity {
+/**
+ * Created by jesse on 17/09/2016.
+ */
+public class PostFragment extends Fragment {
     private ImageView mImageView;
     private Button mUploadButton;
-    private Button mTakePicture;
-    private Button mSignOut;
+    private FloatingActionButton mTakePicture;
     private EditText mCaption;
 
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_take_picture);
-
-        enableLocationUpdates(2000, 5000); //Fastest updateInterval and updateInterval
-
-        mCaption = (EditText) findViewById(R.id.caption);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_post, container, false);
+        mCaption = (EditText) v.findViewById(R.id.caption);
 
         mCaption.addTextChangedListener(new TextWatcher() {
             @Override
@@ -80,32 +85,33 @@ public class TakePictureActivity extends BaseActivity {
             }
         });
 
-        mImageView = (ImageView) findViewById(R.id.taken_image);
-        mUploadButton = (Button) findViewById(R.id.upload_image);
+        mImageView = (ImageView) v.findViewById(R.id.taken_image);
+        mUploadButton = (Button) v.findViewById(R.id.upload_image);
         mUploadButton.setVisibility(View.GONE);
         mUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showProgressBar();
+                ((BaseActivity) getActivity()).showProgressBar();
                 mUploadButton.setVisibility(View.GONE);
                 if(photoURI != null) {
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     // Create a storage reference from our app
                     StorageReference storageRef = storage.getReferenceFromUrl("gs://picaloc-2acb6.appspot.com");
 
-                    // Points to "images"
-                    StorageReference imagesRef = storageRef.child("images");
-
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] data = baos.toByteArray();
                     StorageReference riversRef = storageRef.child("images/" + photoURI.getLastPathSegment());
-                    final UploadTask uploadTask = riversRef.putFile(photoURI);
+                    UploadTask uploadTask = riversRef.putBytes(data);
+
                     // Register observers to listen for when the download is done or if it fails
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             // Handle unsuccessful uploads TODO
-                            Toast.makeText(getApplicationContext(), "Failed uploading",
+                            Toast.makeText(getActivity(), "Failed uploading",
                                     Toast.LENGTH_SHORT).show();
-                            hideProgressBar();
+                            ((BaseActivity) getActivity()).hideProgressBar();
                             mUploadButton.setVisibility(View.VISIBLE);
                         }
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -122,33 +128,24 @@ public class TakePictureActivity extends BaseActivity {
             }
         });
 
-        mTakePicture = (Button) findViewById(R.id.take_image);
+        mTakePicture = (FloatingActionButton) v.findViewById(R.id.take_image);
         mTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dispatchTakePictureIntent();
             }
         });
-
-        mSignOut = (Button) findViewById(R.id.sign_out);
-        mSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, "");
-                startActivity(new Intent(getApplicationContext(), SignInActivity.class));
-                finish();
-            }
-        });
+        return v;
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
     Uri photoURI;
+    Bitmap photoBitmap;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
@@ -158,7 +155,7 @@ public class TakePictureActivity extends BaseActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(getActivity(),
                         "be.tomberndjesse.picaloc.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -168,17 +165,13 @@ public class TakePictureActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Bitmap imageBitmap = null;
-            try {
-                imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoURI);
-                Picasso.with(this).load(photoURI).rotate(90).into(mImageView);
-                //mImageView.setImageBitmap(imageOrientationValidator(imageBitmap, photoURI.getPath()));
-                mUploadButton.setVisibility(View.VISIBLE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+
+                new ResizeOperation().execute(getActivity().getResources().getConfiguration().orientation);
+
+            //mImageView.setImageBitmap(imageOrientationValidator(imageBitmap, photoURI.getPath()));
+
 
         }
     }
@@ -187,7 +180,7 @@ public class TakePictureActivity extends BaseActivity {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -201,13 +194,13 @@ public class TakePictureActivity extends BaseActivity {
         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
         Log.d("test", downloadUrl.toString());
 
-        PostClient client = ServiceGenerator.createService(PostClient.class, getApplicationContext());
+        PostClient client = ServiceGenerator.createService(PostClient.class, getActivity());
 
         Pattern stopWords = Pattern.compile("\\b(?:i|https://firebasestorage.googleapis.com/v0/b/picaloc-2acb6.appspot.com)\\b\\s*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = stopWords.matcher(downloadUrl.toString());
         String clean = matcher.replaceAll("");
 
-        Post post = new Post(mCaption.getText().toString(), clean, new PostLocation(getLocation()));
+        Post post = new Post(mCaption.getText().toString(), clean, new PostLocation(((BaseActivity) getActivity()).getLocation()));
         client.addPost(post).enqueue(new Callback<Empty>() {
             @Override
             public void onResponse(Call<Empty> call, Response<Empty> response) {
@@ -221,19 +214,49 @@ public class TakePictureActivity extends BaseActivity {
                 else{
                     mUploadButton.setVisibility(View.VISIBLE);
                 }
-                Toast.makeText(getApplicationContext(), text,
+                Toast.makeText(getActivity(), text,
                         Toast.LENGTH_SHORT).show();
-                hideProgressBar();
+                ((BaseActivity) getActivity()).hideProgressBar();
 
             }
 
             @Override
             public void onFailure(Call<Empty> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Failed uploading",
+                Toast.makeText(getActivity(), "Failed uploading",
                         Toast.LENGTH_SHORT).show();
                 mUploadButton.setVisibility(View.VISIBLE);
-                hideProgressBar();
+                ((BaseActivity) getActivity()).hideProgressBar();
             }
         });
+    }
+
+    private class ResizeOperation extends AsyncTask<Integer, Void, String> {
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            Bitmap imageBitmap = null;
+            try {
+                imageBitmap = Picasso.with(getActivity()).load(photoURI).get();
+                photoBitmap = (params[0] == android.content.res.Configuration.ORIENTATION_LANDSCAPE && imageBitmap.getWidth() > imageBitmap.getHeight()) ? Picasso.with(getActivity()).load(photoURI).resize(imageBitmap.getWidth()/5, imageBitmap.getHeight()/5).get():
+                        Picasso.with(getActivity()).load(photoURI).resize(imageBitmap.getWidth()/5, imageBitmap.getHeight()/5).rotate(90).get();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mImageView.setImageBitmap(photoBitmap);
+            mUploadButton.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
     }
 }
