@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :set_bike, only: [:show]
+  before_action :set_post, only: [:destroy]
 
   def index
     render :json => Post.all
@@ -14,10 +14,15 @@ class PostsController < ApplicationController
     end
   end
 
+  def destroy
+    @post.destroy
+    head :no_content
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_post
-    @bike = Post.find(params[:id])
+    @post = Post.find(params[:id])
   end
 
   def post_params
