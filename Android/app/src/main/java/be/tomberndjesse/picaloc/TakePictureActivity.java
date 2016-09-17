@@ -2,18 +2,14 @@ package be.tomberndjesse.picaloc;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.GradientDrawable;
-import android.location.Location;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -41,11 +37,13 @@ import be.tomberndjesse.picaloc.Retrofit.Post;
 import be.tomberndjesse.picaloc.Retrofit.PostClient;
 import be.tomberndjesse.picaloc.Retrofit.PostLocation;
 import be.tomberndjesse.picaloc.Retrofit.ServiceGenerator;
+import be.tomberndjesse.picaloc.utils.SettingsUtil;
+import be.tomberndjesse.picaloc.utils.SharedPreferencesKeys;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TakePictureActivity extends LoggedInActivity {
+public class TakePictureActivity extends BaseActivity {
     private ImageView mImageView;
     private Button mUploadButton;
     private Button mTakePicture;
@@ -61,64 +59,65 @@ public class TakePictureActivity extends LoggedInActivity {
         enableLocationUpdates(2000, 5000); //Fastest updateInterval and updateInterval
 
         mCaption = (EditText) findViewById(R.id.caption);
+
+        mCaption.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length() > 0)
+                    mUploadButton.setVisibility(View.VISIBLE);
+                else if(photoURI == null)
+                    mUploadButton.setVisibility(View.GONE);
+            }
+        });
+
         mImageView = (ImageView) findViewById(R.id.taken_image);
         mUploadButton = (Button) findViewById(R.id.upload_image);
         mUploadButton.setVisibility(View.GONE);
         mUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showProgressBar();
                 mUploadButton.setVisibility(View.GONE);
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                // Create a storage reference from our app
-                StorageReference storageRef = storage.getReferenceFromUrl("gs://picaloc-2acb6.appspot.com");
+                if(photoURI != null) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    // Create a storage reference from our app
+                    StorageReference storageRef = storage.getReferenceFromUrl("gs://picaloc-2acb6.appspot.com");
 
-                // Points to "images"
-                StorageReference imagesRef = storageRef.child("images");
+                    // Points to "images"
+                    StorageReference imagesRef = storageRef.child("images");
 
-                StorageReference riversRef = storageRef.child("images/"+photoURI.getLastPathSegment());
-                final UploadTask uploadTask = riversRef.putFile(photoURI);
-
-                // Register observers to listen for when the download is done or if it fails
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads TODO
-                        Toast.makeText(getApplicationContext(), "Failed uploading",
-                                Toast.LENGTH_SHORT).show();
-                        mUploadButton.setVisibility(View.VISIBLE);
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Log.d("test", downloadUrl.toString());
-
-                        PostClient client = ServiceGenerator.createService(PostClient.class);
-
-                        Pattern stopWords = Pattern.compile("\\b(?:i|https://firebasestorage.googleapis.com/v0/b/picaloc-2acb6.appspot.com)\\b\\s*", Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = stopWords.matcher(downloadUrl.toString());
-                        String clean = matcher.replaceAll("");
-
-                        Post post = new Post(mCaption.getText().toString(), clean, new PostLocation(getLocation()));
-                        client.addPost(post).enqueue(new Callback<Empty>() {
-                            @Override
-                            public void onResponse(Call<Empty> call, Response<Empty> response) {
-                                Toast.makeText(getApplicationContext(), "Uploaded",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onFailure(Call<Empty> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Failed uploading",
-                                        Toast.LENGTH_SHORT).show();
-                                mUploadButton.setVisibility(View.VISIBLE);
-                            }
-                        });
-
-
-                    }
-                });
+                    StorageReference riversRef = storageRef.child("images/" + photoURI.getLastPathSegment());
+                    final UploadTask uploadTask = riversRef.putFile(photoURI);
+                    // Register observers to listen for when the download is done or if it fails
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads TODO
+                            Toast.makeText(getApplicationContext(), "Failed uploading",
+                                    Toast.LENGTH_SHORT).show();
+                            hideProgressBar();
+                            mUploadButton.setVisibility(View.VISIBLE);
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            sendBackendRequest(taskSnapshot.getDownloadUrl());
+                        }
+                    });
+                }
+                else{
+                    sendBackendRequest(Uri.parse(""));
+                }
 
             }
         });
@@ -136,6 +135,7 @@ public class TakePictureActivity extends LoggedInActivity {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, "");
                 startActivity(new Intent(getApplicationContext(), SignInActivity.class));
                 finish();
             }
@@ -146,6 +146,7 @@ public class TakePictureActivity extends LoggedInActivity {
     Uri photoURI;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
@@ -196,42 +197,43 @@ public class TakePictureActivity extends LoggedInActivity {
         return image;
     }
 
-    private Bitmap imageOrientationValidator(Bitmap bitmap, String path) {
+    private void sendBackendRequest(Uri downloadUrl){
+        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+        Log.d("test", downloadUrl.toString());
 
-        ExifInterface ei;
-        try {
-            ei = new ExifInterface(path);
-            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    bitmap = rotateImage(bitmap, 90);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    bitmap = rotateImage(bitmap, 180);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    bitmap = rotateImage(bitmap, 270);
-                    break;
+        PostClient client = ServiceGenerator.createService(PostClient.class, getApplicationContext());
+
+        Pattern stopWords = Pattern.compile("\\b(?:i|https://firebasestorage.googleapis.com/v0/b/picaloc-2acb6.appspot.com)\\b\\s*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = stopWords.matcher(downloadUrl.toString());
+        String clean = matcher.replaceAll("");
+
+        Post post = new Post(mCaption.getText().toString(), clean, new PostLocation(getLocation()));
+        client.addPost(post).enqueue(new Callback<Empty>() {
+            @Override
+            public void onResponse(Call<Empty> call, Response<Empty> response) {
+                String text = "Failed uploading.";
+                if(response.isSuccessful()) {
+                    text = "Uploaded";
+                    photoURI = null;
+                    mImageView.setImageResource(android.R.color.transparent);
+                    mCaption.setText("");
+                }
+                else{
+                    mUploadButton.setVisibility(View.VISIBLE);
+                }
+                Toast.makeText(getApplicationContext(), text,
+                        Toast.LENGTH_SHORT).show();
+                hideProgressBar();
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return bitmap;
-    }
-
-    private Bitmap rotateImage(Bitmap source, float angle) {
-
-        Bitmap bitmap = null;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        try {
-            bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                    matrix, true);
-        } catch (OutOfMemoryError err) {
-            err.printStackTrace();
-        }
-        return bitmap;
+            @Override
+            public void onFailure(Call<Empty> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failed uploading",
+                        Toast.LENGTH_SHORT).show();
+                mUploadButton.setVisibility(View.VISIBLE);
+                hideProgressBar();
+            }
+        });
     }
 }

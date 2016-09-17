@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import be.tomberndjesse.picaloc.utils.NetworkUtil;
+
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private TextView mStatusTextView;
     private GoogleApiClient mGoogleApiClient;
@@ -131,8 +133,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
         } else {
-            // Google Sign In failed, update UI appropriately
-            // ...
+            if(!NetworkUtil.isNetworkAvailable(this)){
+               Toast.makeText(getApplicationContext(), "No network available.",
+                        Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Can't connect to server.",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
