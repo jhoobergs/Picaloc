@@ -25,6 +25,6 @@ test:
 production:
   <<: *default
   adapter: postgresql
-  database: picaloc_production
-  username: pguser
+  database: ENV['PG_NAME']
+  username: ENV['PG_USER']
   password: ENV['PG_PASSWORD']
