@@ -147,6 +147,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         } else {
                             Toast.makeText(getApplicationContext(), "Signed in.",
                                     Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(), TakePictureActivity.class);
+                            startActivity(i);
+                            finish();
                         }
                     }
                 });
