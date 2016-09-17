@@ -43,6 +43,9 @@ public class TakePictureActivity extends LoggedInActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_picture);
+
+        enableLocationUpdates(2000, 5000); //Fastest updateInterval and updateInterval
+
         mImageView = (ImageView) findViewById(R.id.taken_image);
         mUploadButton = (Button) findViewById(R.id.upload_image);
         mUploadButton.setVisibility(View.GONE);
