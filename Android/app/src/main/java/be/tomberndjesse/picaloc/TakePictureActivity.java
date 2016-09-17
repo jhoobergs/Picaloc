@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,12 +33,25 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import be.tomberndjesse.picaloc.Retrofit.Empty;
+import be.tomberndjesse.picaloc.Retrofit.Post;
+import be.tomberndjesse.picaloc.Retrofit.PostClient;
+import be.tomberndjesse.picaloc.Retrofit.PostLocation;
+import be.tomberndjesse.picaloc.Retrofit.ServiceGenerator;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TakePictureActivity extends LoggedInActivity {
     private ImageView mImageView;
     private Button mUploadButton;
     private Button mTakePicture;
     private Button mSignOut;
+    private EditText mCaption;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +60,7 @@ public class TakePictureActivity extends LoggedInActivity {
 
         enableLocationUpdates(2000, 5000); //Fastest updateInterval and updateInterval
 
+        mCaption = (EditText) findViewById(R.id.caption);
         mImageView = (ImageView) findViewById(R.id.taken_image);
         mUploadButton = (Button) findViewById(R.id.upload_image);
         mUploadButton.setVisibility(View.GONE);
@@ -78,8 +93,30 @@ public class TakePictureActivity extends LoggedInActivity {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         Log.d("test", downloadUrl.toString());
-                        Toast.makeText(getApplicationContext(), "Uploaded",
-                                Toast.LENGTH_SHORT).show();
+
+                        PostClient client = ServiceGenerator.createService(PostClient.class);
+
+                        Pattern stopWords = Pattern.compile("\\b(?:i|https://firebasestorage.googleapis.com/v0/b/picaloc-2acb6.appspot.com)\\b\\s*", Pattern.CASE_INSENSITIVE);
+                        Matcher matcher = stopWords.matcher(downloadUrl.toString());
+                        String clean = matcher.replaceAll("");
+
+                        Post post = new Post(mCaption.getText().toString(), clean, new PostLocation(getLocation()));
+                        client.addPost(post).enqueue(new Callback<Empty>() {
+                            @Override
+                            public void onResponse(Call<Empty> call, Response<Empty> response) {
+                                Toast.makeText(getApplicationContext(), "Uploaded",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Empty> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Failed uploading",
+                                        Toast.LENGTH_SHORT).show();
+                                mUploadButton.setVisibility(View.VISIBLE);
+                            }
+                        });
+
+
                     }
                 });
 
