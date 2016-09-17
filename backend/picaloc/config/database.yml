@@ -8,13 +8,11 @@ default: &default
   pool: 5
   timeout: 5000
   host: localhost
-  username: pguser
-  password: ENV['PG_PASSWORD']
 
 development:
   <<: *default
-  adapter: postgresql
-  database: picaloc_development
+  adapter: sqlite3
+  database: db/development.sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -28,3 +26,5 @@ production:
   <<: *default
   adapter: postgresql
   database: picaloc_production
+  username: pguser
+  password: ENV['PG_PASSWORD']
