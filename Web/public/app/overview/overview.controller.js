@@ -10,6 +10,8 @@
 
         function prepareView() {
             getThumbList().then(function success(response) {
+                response = response.filter(predicate);
+
                 for (var i=0; i < response.length; i++) {
                     response[i].random = Math.random();
 
@@ -42,6 +44,12 @@
                         break;
                 }
             });
+
+            function predicate(value) {
+                var loc = locationFactory.getLocation();
+                var d = Math.sqrt(Math.pow((loc.latitude - value.latitude), 2) + Math.pow((loc.longitude - value.longitude), 2));
+                return d < 0.1;
+            }
         }
 
         $scope.$on('sort', function() {
@@ -66,7 +74,7 @@
                 }
             }).then(function success(response) {
                 var dat = response.data;
-                if (typeof dat === 'object') {
+                if (dat.constructor !== Array) {
                     dat = [dat];
                 }
                 deferred.resolve(dat);
