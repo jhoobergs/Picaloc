@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -8,7 +12,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="be.tomberndjesse.picaloc.TakePictureActivity">
+    tools:context=".SwitcherActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -23,12 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload"
-        android:id="@+id/upload_image"
-        android:background="@android:color/holo_green_light"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,18 +38,24 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
+        <android.support.design.widget.FloatingActionButton
+        android:id="@+id/take_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_camera_alt_yellow_24dp"
+            app:fabSize="normal"
+        app:layout_anchor="@id/taken_image"
+        app:layout_anchorGravity="right"/>
         <Button
-            android:id="@+id/take_image"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Picture"/>
-        <Button
-            android:id="@+id/sign_out"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Log out"/>
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload"
+            android:id="@+id/upload_image"
+            android:background="@color/colorAccent"/>
     </LinearLayout>
 
 </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

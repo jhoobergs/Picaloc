@@ -17,4 +17,12 @@ public class PostLocation {
     public PostLocation(Location location){
         this(location.getLatitude(), location.getLongitude());
     }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
 }

@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
 	android:gravity="center"
 	android:orientation="vertical"
-    tools:context="be.tomberndjesse.picaloc.TakePictureActivity">
+    tools:context=".SwitcherActivity">
 
 	<com.google.android.gms.common.SignInButton
 		android:id="@+id/sign_in_button"

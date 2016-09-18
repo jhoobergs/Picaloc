@@ -27,12 +27,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import be.tomberndjesse.picaloc.utils.NetworkUtil;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-    private TextView mStatusTextView;
     private GoogleApiClient mGoogleApiClient;
     private int RC_SIGN_IN;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    private SignInButton mSignInButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +39,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            startActivity(new Intent(this, TakePictureActivity.class));
+            startActivity(new Intent(this, SwitcherActivity.class));
             finish();
         }
 
@@ -82,17 +81,15 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         // may be displayed when only basic profile is requested. Try adding the
         // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
         // difference.
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setScopes(gso.getScopeArray());
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        mSignInButton.setSize(SignInButton.SIZE_STANDARD);
+        mSignInButton.setScopes(gso.getScopeArray());
+        mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
             }
         });
-
-        mStatusTextView = (TextView) findViewById(R.id.status);
 
     }
 
@@ -111,6 +108,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void signIn() {
+
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -161,7 +159,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         } else {
                             Toast.makeText(getApplicationContext(), "Signed in.",
                                     Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), TakePictureActivity.class);
+                            Intent i = new Intent(getApplicationContext(), SwitcherActivity.class);
                             startActivity(i);
                             finish();
                         }

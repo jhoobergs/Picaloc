@@ -7,12 +7,38 @@ public class Post {
     private long id;
     private String title;
     private String image_url_id;
-    private PostLocation location;
-    private long likes;
+    private double latitude;
+    private double longitude;
+    private long likes_count;
 
     public Post(String title, String image_url_id, PostLocation location){
         this.title = title;
         this.image_url_id = image_url_id;
-        this.location = location;
+        this.latitude = location.getLatitude();
+        this.longitude = location.getLongitude();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getImage_url_id() {
+        return image_url_id;
+    }
+
+    public String getUrl(){
+        return "https://firebasestorage.googleapis.com/v0/b/picaloc-2acb6.appspot.com"+getImage_url_id();
+    }
+
+    public long getLikes() {
+        return likes_count;
+    }
+
+    public void incrementLikes() {
+        likes_count++;
     }
 }
