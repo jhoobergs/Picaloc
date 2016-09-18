@@ -95,8 +95,14 @@ public class OverviewFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful()){
-                    listView.setAdapter(new ImageListAdapter(getActivity(), response.body()));
-                    new SettingsUtil(getActivity()).setString(SharedPreferencesKeys.PostsDataString, new Gson().toJson(response.body()));
+                    if(response.body() != null) {
+                        listView.setAdapter(new ImageListAdapter(getActivity(), response.body()));
+                        new SettingsUtil(getActivity()).setString(SharedPreferencesKeys.PostsDataString, new Gson().toJson(response.body()));
+                    }
+                    else{
+                        listView.setAdapter(new ImageListAdapter(getActivity(), new ArrayList<Post>()));
+                        new SettingsUtil(getActivity()).setString(SharedPreferencesKeys.PostsDataString, "[]");
+                    }
                 }
                 swipeRefreshLayout.setRefreshing(false);
             }

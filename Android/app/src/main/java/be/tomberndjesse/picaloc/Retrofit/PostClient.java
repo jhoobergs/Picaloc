@@ -20,7 +20,7 @@ public interface PostClient {
     @POST("/user_locations")
     Call<Empty> setLocation(@Body PostLocation location);
 
-    @POST("/user/post")
+    @GET("/user_received_post")
     Call<List<Post>> getPostsForUser();
 
     @POST("/likes")
