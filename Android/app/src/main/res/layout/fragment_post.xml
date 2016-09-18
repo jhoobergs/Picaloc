@@ -27,12 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload"
-        android:id="@+id/upload_image"
-        android:background="@android:color/holo_green_light"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,14 +40,21 @@
         android:orientation="horizontal">
         <android.support.design.widget.FloatingActionButton
         android:id="@+id/take_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_camera_alt_black_24dp"
+        android:src="@drawable/ic_camera_alt_yellow_24dp"
             app:fabSize="normal"
         app:layout_anchor="@id/taken_image"
         app:layout_anchorGravity="right"/>
+        <Button
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload"
+            android:id="@+id/upload_image"
+            android:background="@color/colorAccent"/>
     </LinearLayout>
 
 </LinearLayout>

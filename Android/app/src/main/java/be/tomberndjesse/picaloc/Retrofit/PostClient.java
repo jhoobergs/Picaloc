@@ -22,4 +22,7 @@ public interface PostClient {
 
     @POST("/user/post")
     Call<List<Post>> getPostsForUser();
+
+    @POST("/likes")
+    Call<Empty> like(@Body LikePost post);
 }

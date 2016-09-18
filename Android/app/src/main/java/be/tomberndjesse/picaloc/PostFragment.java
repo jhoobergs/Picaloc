@@ -238,7 +238,7 @@ public class PostFragment extends Fragment {
             try {
                 imageBitmap = Picasso.with(getActivity()).load(photoURI).get();
                 photoBitmap = (params[0] == android.content.res.Configuration.ORIENTATION_LANDSCAPE && imageBitmap.getWidth() > imageBitmap.getHeight()) ? Picasso.with(getActivity()).load(photoURI).resize(imageBitmap.getWidth()/5, imageBitmap.getHeight()/5).get():
-                        Picasso.with(getActivity()).load(photoURI).resize(imageBitmap.getWidth()/5, imageBitmap.getHeight()/5).rotate(90).get();
+                        Picasso.with(getActivity()).load(photoURI).resize(imageBitmap.getWidth()/20, imageBitmap.getHeight()/20).rotate(90).get();
 
             } catch (IOException e) {
                 e.printStackTrace();
