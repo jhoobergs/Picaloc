@@ -17,7 +17,7 @@ public interface PostClient {
     @POST("/posts/add")
     Call<Empty> addPost(@Body Post post);
 
-    @POST("/userlocations")
+    @POST("/user_locations")
     Call<Empty> setLocation(@Body PostLocation location);
 
     @POST("/user/post")

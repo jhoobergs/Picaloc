@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="picaloc">
+  <head>
+    <meta charset="utf-8">
+    <title>Picaloc</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+    <base href="/">
+
+    <script src='bower_components/lodash/lodash.js'></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
+    <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+    <script src='bower_components/angular-simple-logger/dist/angular-simple-logger.js'></script>
+    <script src='bower_components/angular-google-maps/dist/angular-google-maps.js'></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
+  </head>
+  <body ng-controller="appController" style="background-color: #f7f7f7">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid dark-blue-back">
+        <div class="navbar-header" style="margin-left: 15px">
+          <a class="navbar-brand" style="color: #f7f7f7; font-size: 22px" href="#">
+            <img style="height: 120%; display: inline" src="logo.svg">
+            Picaloc
+          </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: whitesmoke;" >Order by  <span class="glyphicon glyphicon-menu-down"></span></a>
+              <ul class="dropdown-menu">
+                <form>
+                  <li><input type="radio" name="sort" value="recent" ng-model="sort" style="margin:0 10px" checked>Most recent</li>
+                  <li><input type="radio" name="sort" value="top" ng-model="sort" style="margin:0 10px">Top rated</li>
+                  <li><input type="radio" name="sort" value="random" ng-model="sort" style="margin:0 10px">Surprise me!</li>
+                </form>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div ui-view></div>
+
+    <script src="app/app.module.js"></script>
+    <script src="app/app.config.js"></script>
+  <script src="app/app.controller.js"></script>
+
+    <script src="app/common/location.service.js"></script>
+
+  <script src="app/overview/map.directive.js"></script>
+  <script src="app/overview/overview.controller.js"></script>
+  </body>
+</html>

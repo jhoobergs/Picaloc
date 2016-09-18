@@ -91,7 +91,7 @@ public class OverviewFragment extends Fragment {
             listView.setAdapter(new ImageListAdapter(getActivity(), Arrays.asList(new Gson().fromJson(data, Post[].class))));
         }
 
-        ServiceGenerator.createService(PostClient.class, getActivity()).getPosts(new PostLocation(10,10)).enqueue(new Callback<List<Post>>() {
+        ServiceGenerator.createService(PostClient.class, getActivity()).getPostsForUser().enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful()){
