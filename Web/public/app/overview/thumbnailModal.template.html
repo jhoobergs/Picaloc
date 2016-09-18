@@ -1,0 +1,24 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="modalInfo.title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="flex-container">
+                    <img class="flex-item" style="max-height:400px; max-width: 100%; margin-bottom: 10px" ng-src="{{modalInfo.url}}">
+
+                <div>
+                    <span ng-bind="modalInfo.likes" class="" style="font-size: 20px"></span>
+                    <span class="glyphicon glyphicon-heart" style="font-size: 25px; top: 5px;"></span>
+                </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <span class="pull-left">Created on: {{modalInfo.created}}</span>
+                <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
