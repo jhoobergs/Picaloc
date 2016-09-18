@@ -5,15 +5,16 @@ class PostsController < ApplicationController
 
   def index
     #TODO: include whether this user has liked the picture or not
-    if post_params[:longitude] and post_params[:latitude]
-      @post = Post.new({:longitude => post_params[:longitude],
-                        :latitude => post_params[:latitude]})
-      user_locations = sort_user_locations
-      user_locations.select { |user_id, distance| distance < 10}
-      render :json => Post.find_by(user_id: user_locations.keys)
-    else
-      render :json => Post.all
-    end
+    # if post_params[:longitude] and post_params[:latitude]
+    #   @post = Post.new({:longitude => post_params[:longitude],
+    #                     :latitude => post_params[:latitude]})
+    #   user_locations = sort_user_locations
+    #   user_locations.select { |user_id, distance| distance < 10}
+    #   render :json => Post.find_by(user_id: user_locations.keys)
+    # else
+    #   render :json => Post.all
+    # end
+    render :json => Post.all
   end
 
   def create
