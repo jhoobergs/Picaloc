@@ -10,6 +10,8 @@
 
         function prepareView() {
             getThumbList().then(function success(response) {
+                response = response.filter(predicate);
+
                 for (var i=0; i < response.length; i++) {
                     response[i].random = Math.random();
 
@@ -42,6 +44,12 @@
                         break;
                 }
             });
+
+            function predicate(value) {
+                var loc = locationFactory.getLocation();
+                var d = Math.sqrt(Math.pow((loc.latitude - value.latitude), 2) + Math.pow((loc.longitude - value.longitude), 2));
+                return d < 0.1;
+            }
         }
 
         $scope.$on('sort', function() {
@@ -54,23 +62,28 @@
 
         function getThumbList() {
             var deferred = $q.defer();
+            var loc = locationFactory.getLocation();
 
             $http({
                 method: 'POST',
                 url: 'https://picaloc.herokuapp.com/posts/get',
                 params: {
                     user_id: 1,
-                    location: locationFactory.getLocation
+                    latitude: loc.latitude,
+                    longitude: loc.longitude
                 }
             }).then(function success(response) {
-                deferred.resolve(response.data);
+                var dat = response.data;
+                if (dat.constructor !== Array) {
+                    dat = [dat];
+                }
+                deferred.resolve(dat);
             });
 
             return deferred.promise;
         }
 
         var modal = $modal({scope: $scope, templateUrl: 'app/overview/thumbnailModal.template.html', show: false});
-        // var modal = $modal({scope: $scope, content: 'app/overview/thumbnailModal.template.html', show: false});
 
         $scope.openModal = function(thumbnail) {
             $scope.modalInfo = {
