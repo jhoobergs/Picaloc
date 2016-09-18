@@ -18,6 +18,14 @@ class PostsController < ApplicationController
     end
   end
 
+  def update
+    if @post.update(post_params)
+      render json: {status: :updated}
+    else
+      render json: @post.errors, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     @post.destroy
     head :no_content
