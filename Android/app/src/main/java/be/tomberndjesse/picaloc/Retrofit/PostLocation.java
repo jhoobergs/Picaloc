@@ -15,7 +15,14 @@ public class PostLocation {
     }
 
     public PostLocation(Location location){
-        this(location.getLatitude(), location.getLongitude());
+        if(location != null) {
+            this.latitude = location.getLatitude();
+            this.longitude = location.getLongitude();
+        }
+        else{
+            this.latitude = 10;
+            this.longitude = 10;
+        }
     }
 
     public double getLatitude() {
