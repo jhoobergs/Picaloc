@@ -54,23 +54,28 @@
 
         function getThumbList() {
             var deferred = $q.defer();
+            var loc = locationFactory.getLocation();
 
             $http({
                 method: 'POST',
                 url: 'https://picaloc.herokuapp.com/posts/get',
                 params: {
                     user_id: 1,
-                    location: locationFactory.getLocation
+                    latitude: loc.latitude,
+                    longitude: loc.longitude
                 }
             }).then(function success(response) {
-                deferred.resolve(response.data);
+                var dat = response.data;
+                if (typeof dat === 'object') {
+                    dat = [dat];
+                }
+                deferred.resolve(dat);
             });
 
             return deferred.promise;
         }
 
         var modal = $modal({scope: $scope, templateUrl: 'app/overview/thumbnailModal.template.html', show: false});
-        // var modal = $modal({scope: $scope, content: 'app/overview/thumbnailModal.template.html', show: false});
 
         $scope.openModal = function(thumbnail) {
             $scope.modalInfo = {
