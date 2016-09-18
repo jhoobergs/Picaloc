@@ -2,15 +2,17 @@
     'use strict';
 
     angular.module('picaloc')
-        .controller('overviewController', ['$scope', '$q', '$http', '$modal', 'locationFactory', overviewCtrl]);
+        .controller('overviewController', ['$scope', '$q', '$http', '$modal', '$filter', 'locationFactory', overviewCtrl]);
 
-    function overviewCtrl($scope, $q, $http, $modal, locationFactory) {
+    function overviewCtrl($scope, $q, $http, $modal, $filter, locationFactory) {
 
         prepareView();
 
         function prepareView() {
             getThumbList().then(function success(response) {
                 for (var i=0; i < response.length; i++) {
+                    response[i].random = Math.random();
+
                     if (!response[i].likes_count) {
                         response[i].likes_count = 0;
                     }
@@ -27,10 +29,25 @@
                         response[i].title_short = response[i].title;
                     }
                 }
-                $scope.thumbs = response;
+
+                switch ($scope.$parent.sort) {
+                    case 'random':
+                        $scope.thumbs = $filter('orderBy')(response, 'random');
+                        break;
+                    case 'top':
+                        $scope.thumbs = $filter('orderBy')(response, 'likes_count');
+                        break;
+                    case 'recent':
+                        $scope.thumbs = $filter('orderBy')(response, 'created_at');
+                        break;
+                }
             });
         }
-        
+
+        $scope.$on('sort', function() {
+            prepareView();
+        });
+
         $scope.$on('markerChanged', function(event) {
             prepareView();
         });
@@ -76,7 +93,6 @@
 
         $scope.endHover = function(thumbnail) {
             $scope.$broadcast('hover', 'end', thumbnail);
-
         };
     }
 })();

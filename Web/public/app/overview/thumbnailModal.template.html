@@ -7,15 +7,16 @@
             </div>
             <div class="modal-body">
                 <div class="flex-container">
-                    <img class="flex-item" style="height:400px; margin-bottom: 20px" ng-src="{{modalInfo.url}}">
-                </div>
+                    <img class="flex-item" style="height:400px; margin-bottom: 10px" ng-src="{{modalInfo.url}}">
+
                 <div>
-                    <span>Created on: {{modalInfo.created}}</span>
-                    <span class="glyphicon glyphicon-heart pull-right" style="margin-right: 10px; top: 2px;"></span>
-                    <span ng-bind="modalInfo.likes" class="pull-right" style="margin-right:5px"></span>
+                    <span ng-bind="modalInfo.likes" class="" style="font-size: 20px"></span>
+                    <span class="glyphicon glyphicon-heart" style="font-size: 25px; top: 5px;"></span>
                 </div>
+                    </div>
             </div>
             <div class="modal-footer">
+                <span class="pull-left">Created on: {{modalInfo.created}}</span>
                 <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
             </div>
         </div>

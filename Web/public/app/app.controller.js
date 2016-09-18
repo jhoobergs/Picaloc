@@ -2,9 +2,15 @@
     'use strict';
 
     angular.module('picaloc')
-        .controller('appController', ['$scope', '$state', 'locationFactory', appCtrl]);
+        .controller('appController', ['$scope', 'locationFactory', appCtrl]);
 
-    function appCtrl($scope, $state, locationFactory) {
+    function appCtrl($scope, locationFactory) {
+
+        $scope.sort = 'recent';
+
+        $scope.$watch('sort', function() {
+            $scope.$broadcast('sort');
+        });
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
