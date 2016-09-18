@@ -35,10 +35,10 @@
                         $scope.thumbs = $filter('orderBy')(response, 'random');
                         break;
                     case 'top':
-                        $scope.thumbs = $filter('orderBy')(response, 'likes_count');
+                        $scope.thumbs = $filter('orderBy')(response, 'likes_count', true);
                         break;
                     case 'recent':
-                        $scope.thumbs = $filter('orderBy')(response, 'created_at');
+                        $scope.thumbs = $filter('orderBy')(response, 'created_at', true);
                         break;
                 }
             });
