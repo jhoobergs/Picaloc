@@ -35,6 +35,11 @@ class PostsController < ApplicationController
     head :no_content
   end
 
+  def score
+    @post = Post.find(params[:id])
+    render json: { score: get_score }
+  end
+
   private
   def broadcast_post
     # get all users
@@ -51,16 +56,20 @@ class PostsController < ApplicationController
                              @post[:latitude])
     end
     user_locations.sort_by { |user_id, distance| distance }
-    max_user_count = [get_score, @post.likes.count].min
-    user_locations.keys[0..max_user_count].each do |key|
-      send_post key, @post[:id]
+    # max_user_count = [get_score, @post.likes.count].min
+    max_user_count = [get_score, user_locations.count].min
+    user_locations.keys[0..max_user_count].each do |user_id|
+      puts user_id
+      send_post user_id, @post[:id]
     end
   end
 
   def get_score
+    # Post.find_by # TODO: implement
     (1 + @post.likes.count) * 10
   end
 
+  # TODO: Use vincenty
   def calculate_distance(lon1, lat1, lon2, lat2)
     Math.sqrt((lon1 - lon2).abs**2 + (lat1 - lat2).abs**2)
   end

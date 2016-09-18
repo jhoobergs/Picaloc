@@ -1,6 +1,8 @@
 class UserReceivedPostController < ApplicationController
   def index
-    render json: UserReceivedPost.all
+    if validate_token
+      render :json => UserReceivedPost.find_by(user_id: @payload['user_id'])
+    end
   end
 
   def destroy
