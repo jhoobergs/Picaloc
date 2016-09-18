@@ -23,4 +23,4 @@ All posts are done by smartphone, in this case through an Android app. It's also
 + HTN and Waterloo University are totaly awesome!
 
 ## about us
-We are three computer engineering students from KU Leuven university in Belgium. This is our first hackaton and it was an awesome experience. We're also developers at Quivr, a non profit student organisation in Belgium which let students check their schedule, what they can eat in the student restaurants, how much place there is left in the libraries and much more.
+We are three computer engineering students from the KU Leuven university in Belgium. This was our first hackaton and it was an awesome experience. We're also developers at Quivr(.be), a non profit student organisation in Belgium which let students check their schedule, what they can eat in the student restaurants, how much place there is left in the libraries and much more.
