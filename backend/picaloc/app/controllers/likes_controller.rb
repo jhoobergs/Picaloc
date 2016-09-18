@@ -11,7 +11,7 @@ class LikesController < ApplicationController
       if @like.save
         render json: {status: :created}
       else
-        render json: @post.errors, status: :unprocessable_entity
+        render json: @like.errors, status: :unprocessable_entity
       end
     end
   end
