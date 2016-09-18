@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   resources :likes
   resources :user_received_post
 
+  get 'users/:id/score', to: 'posts#score'
   post 'posts/add', to: 'posts#create'
   post 'posts/get', to: 'posts#index'
   patch 'posts/:id', to: 'posts#update'
+  get 'user_received_post/:user_id/', to: 'user_received_post#index'
 end

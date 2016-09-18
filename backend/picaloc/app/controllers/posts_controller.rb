@@ -5,6 +5,15 @@ class PostsController < ApplicationController
 
   def index
     #TODO: include whether this user has liked the picture or not
+    # if post_params[:longitude] and post_params[:latitude]
+    #   @post = Post.new({:longitude => post_params[:longitude],
+    #                     :latitude => post_params[:latitude]})
+    #   user_locations = sort_user_locations
+    #   user_locations.select { |user_id, distance| distance < 10}
+    #   render :json => Post.find_by(user_id: user_locations.keys)
+    # else
+    #   render :json => Post.all
+    # end
     render :json => Post.all
   end
 
@@ -35,6 +44,11 @@ class PostsController < ApplicationController
     head :no_content
   end
 
+  def score
+    @post = Post.find(params[:id])
+    render json: { score: get_score }
+  end
+
   private
   def broadcast_post
     # get all users
@@ -42,6 +56,16 @@ class PostsController < ApplicationController
     # sort all the users on their distance to this user
     # calculate the number N users this user can reach
     # select the N closest users and send them this post
+    user_locations = sort_user_locations
+    # max_user_count = [get_score, @post.likes.count].min
+    max_user_count = [get_score, user_locations.count].min
+    user_locations.keys[0..max_user_count].each do |user_id|
+      puts user_id
+      send_post user_id, @post[:id]
+    end
+  end
+
+  def sort_user_locations
     user_locations = {}
     UserLocation.all.each do |user_location|
       user_locations[user_location[:user_id]] =
@@ -51,16 +75,15 @@ class PostsController < ApplicationController
                              @post[:latitude])
     end
     user_locations.sort_by { |user_id, distance| distance }
-    max_user_count = [get_score, @post.likes.count].min
-    user_locations.keys[0..max_user_count].each do |key|
-      send_post key, @post[:id]
-    end
+    user_locations
   end
 
   def get_score
+    # Post.find_by # TODO: implement
     (1 + @post.likes.count) * 10
   end
 
+  # TODO: Use vincenty
   def calculate_distance(lon1, lat1, lon2, lat2)
     Math.sqrt((lon1 - lon2).abs**2 + (lat1 - lat2).abs**2)
   end
