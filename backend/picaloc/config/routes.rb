@@ -6,4 +6,5 @@ Rails.application.routes.draw do
 
   post 'posts/add', to: 'posts#create'
   post 'posts/get', to: 'posts#index'
+  patch 'posts/:id', to: 'posts#update'
 end
