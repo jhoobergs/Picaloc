@@ -6,7 +6,9 @@
             <div class="col-lg-4 col-md-4 col-sm-4 fill-bottom" style="padding-left: 0;">
                 <div class="thumb-container">
                     <div class="thumb dark-blue-back" style="height: 230px; width: 200px;" ng-repeat="thumb in thumbs" ng-click="openModal(thumb)" ng-mouseover="startHover(thumb)" ng-mouseleave="endHover(thumb)">
-                        <img ng-src="{{thumb.image_url}}" style="height: 180px; width: 180px; margin: 10px">
+                        <div class="flex-container" style="height: 200px;">
+                        <img ng-src="{{thumb.image_url}}" style="max-height: 180px; max-width: 180px; margin: 10px">
+                        </div>
                         <span style="color: whitesmoke; margin: 0 10px">{{thumb.title_short}}</span>
                         <span class="glyphicon glyphicon-heart pull-right" style="color: whitesmoke; margin-right: 10px; top: 2px;"></span>
                         <a ng-bind="thumb.likes_count" class="pull-right" style="color: whitesmoke; margin-right:5px"></a>

@@ -53,11 +53,14 @@
         }
 
         var modal = $modal({scope: $scope, templateUrl: 'app/overview/thumbnailModal.template.html', show: false});
+        // var modal = $modal({scope: $scope, content: 'app/overview/thumbnailModal.template.html', show: false});
 
         $scope.openModal = function(thumbnail) {
-            $scope.title = thumbnail.title;
             $scope.modalInfo = {
-                thumbnail: thumbnail
+                title: thumbnail.title,
+                url: thumbnail.image_url,
+                created: new Date(thumbnail.created_at).toDateString(),
+                likes: thumbnail.likes_count
             };
 
             modal.$promise.then(modal.show);
