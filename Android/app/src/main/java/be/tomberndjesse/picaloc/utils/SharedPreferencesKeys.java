@@ -6,4 +6,5 @@ package be.tomberndjesse.picaloc.utils;
 public class SharedPreferencesKeys {
     public static final String FILE_NAME = "be.tomberndjesse.picaloc.preferences";
     public static String TokenString = "Token";
+    public static String PostsDataString = "Posts";
 }

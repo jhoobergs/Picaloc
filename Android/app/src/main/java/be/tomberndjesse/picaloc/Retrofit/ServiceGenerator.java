@@ -3,6 +3,7 @@ package be.tomberndjesse.picaloc.Retrofit;
 import android.content.Context;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import be.tomberndjesse.picaloc.utils.SettingsUtil;
 import be.tomberndjesse.picaloc.utils.SharedPreferencesKeys;
@@ -49,6 +50,8 @@ public class ServiceGenerator {
         });
 
         httpClient.addInterceptor(logging);
+        httpClient.connectTimeout(1, TimeUnit.MINUTES);
+        httpClient.readTimeout(1, TimeUnit.MINUTES);
         Retrofit retrofit = builder.client(httpClient.build()).build();
         return retrofit.create(serviceClass);
     }

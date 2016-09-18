@@ -16,14 +16,22 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import be.tomberndjesse.picaloc.Retrofit.Post;
 import be.tomberndjesse.picaloc.Retrofit.PostClient;
 import be.tomberndjesse.picaloc.Retrofit.PostLocation;
 import be.tomberndjesse.picaloc.Retrofit.ServiceGenerator;
+import be.tomberndjesse.picaloc.utils.SettingsUtil;
+import be.tomberndjesse.picaloc.utils.SharedPreferencesKeys;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +52,6 @@ public class OverviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_overview, container, false);
-        //cardHolder = (LinearLayout) v.findViewById(R.id.card_holder);
 
         listView = (ListView) v.findViewById(R.id.listview);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
@@ -78,11 +85,18 @@ public class OverviewFragment extends Fragment {
     }
 
     public void getData(){
+        String data = new SettingsUtil(getActivity()).getString(SharedPreferencesKeys.PostsDataString);
+        if(! "".equals(data)){
+            Type listType = new TypeToken<ArrayList<Post>>(){}.getType();
+            listView.setAdapter(new ImageListAdapter(getActivity(), Arrays.asList(new Gson().fromJson(data, Post[].class))));
+        }
+
         ServiceGenerator.createService(PostClient.class, getActivity()).getPosts(new PostLocation(10,10)).enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful()){
                     listView.setAdapter(new ImageListAdapter(getActivity(), response.body()));
+                    new SettingsUtil(getActivity()).setString(SharedPreferencesKeys.PostsDataString, new Gson().toJson(response.body()));
                 }
                 swipeRefreshLayout.setRefreshing(false);
             }

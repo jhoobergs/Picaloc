@@ -51,6 +51,15 @@ public class SwitcherActivity extends BaseActivity {
         public int getCount() {
             return this.fragments.size();
         }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if(position == 0)
+                return "Overview <-";
+            else if(position == 1)
+                return "<- Make a post ->";
+            return "-> User Info";
+        }
     }
 
 
