@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :posts
   resources :user_locations
   resources :likes
+  resources :user_received_post
 
   post 'posts/add', to: 'posts#create'
   post 'posts/get', to: 'posts#index'

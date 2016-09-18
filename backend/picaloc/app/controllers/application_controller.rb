@@ -12,6 +12,7 @@ class ApplicationController < ActionController::API
     authenticate_or_request_with_http_token do |token|
       headers = JWT.decode(token, nil, false)[1] # TODO catch expir 500
       if headers['alg'] == 'RS256'
+        @token = token
         @payload = JWT.decode(token, pub_keys[headers['kid']], false).first
         if @payload.nil? or not @payload.has_key? 'user_id'
           return false
