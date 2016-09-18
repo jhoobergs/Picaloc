@@ -1,15 +1,17 @@
-<main>
     <div ng-controller="overviewController">
-        <div class="row">
-            <div map location="location" class="col-lg-8 col-md-8 col-sm-8"></div>
-            <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="row" style="padding-top: 50px">
+            <div map location="location" thumbnails="thumbs" class="col-lg-8 col-md-8 col-sm-8 fill-bottom" style="border-right-color: #34495e;
+    border-right-style: double;
+    border-right-width: 10px; padding-right: 0"></div>
+            <div class="col-lg-4 col-md-4 col-sm-4 fill-bottom" style="padding-left: 0;">
                 <div class="thumb-container">
-                    <div class="thumb dark-blue-back" style="height: 230px; width: 200px;" ng-repeat="thumb in thumbs">
-                        <img src="image.png" style="height: 180px; width: 180px; margin: 10px">
-                        <span style="color: whitesmoke; margin: 0 10px">{{thumb.title}}</span>
+                    <div class="thumb dark-blue-back" style="height: 230px; width: 200px;" ng-repeat="thumb in thumbs" ng-click="openModal(thumb)" ng-mouseover="startHover(thumb)" ng-mouseleave="endHover(thumb)">
+                        <img ng-src="{{thumb.image_url}}" style="height: 180px; width: 180px; margin: 10px">
+                        <span style="color: whitesmoke; margin: 0 10px">{{thumb.title_short}}</span>
+                        <span class="glyphicon glyphicon-heart pull-right" style="color: whitesmoke; margin-right: 10px; top: 2px;"></span>
+                        <a ng-bind="thumb.likes_count" class="pull-right" style="color: whitesmoke; margin-right:5px"></a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</main>

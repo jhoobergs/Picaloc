@@ -11,15 +11,10 @@
             .state('home', {
                 url: '/',
                 templateUrl: 'app/overview/overview.html'
-            })
-
-            .state('login', {
-                url: '/login',
-                templateUrl: 'app/login/login.html'
             });
 
         uiGmapGoogleMapApiProvider.configure({
-            //    key: 'your api key',
+            key: 'AIzaSyAc0dxPV8-Sw-MrP62UXvtYLNshTx5djYk	',
             v: '3.20', //defaults to latest 3.X anyhow
             libraries: 'weather,geometry,visualization,places'
         })

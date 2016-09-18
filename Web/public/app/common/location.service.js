@@ -15,8 +15,14 @@
             getLocation: getLocation
         };
 
-        function setLocation(latitude, longitude) {
-            //TODO broadcast locationchange
+        function setLocation(latitude, longitude, type) {
+            location = {
+                latitude: latitude,
+                longitude: longitude
+            };
+            if (type === 'ext') {
+                $rootScope.$broadcast('locationChange', location);
+            }
         }
 
         function getLocation() {

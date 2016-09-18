@@ -2,15 +2,16 @@
     'use strict';
 
     angular.module('picaloc')
-        .controller('appController', ['$scope', 'locationFactory', appCtrl]);
+        .controller('appController', ['$scope', '$state', 'locationFactory', appCtrl]);
 
-    function appCtrl($scope, locationFactory) {
+    function appCtrl($scope, $state, locationFactory) {
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log(position);
-                locationFactory.setLocation(position.coords.latitude, position.coords.longitude);
+                locationFactory.setLocation(position.coords.latitude, position.coords.longitude, 'ext');
             });
         }
+
     }
 })();

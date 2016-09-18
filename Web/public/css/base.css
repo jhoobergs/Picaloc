@@ -129,9 +129,14 @@ ul {
   justify-content: center;
   align-items: flex-start;
   overflow-y: scroll;
-  height: 700px;
+  height: 100%;
 }
 
 .thumb {
   margin: 10px;
+  border-radius: 5px;
+}
+
+.fill-bottom {
+  height: calc(100vh - 50px);
 }

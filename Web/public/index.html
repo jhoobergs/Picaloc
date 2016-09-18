@@ -21,18 +21,13 @@
     <script src="bower_components/firebase/firebase.js"></script>
   </head>
   <body ng-controller="appController" style="background-color: #f7f7f7">
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid dark-blue-back">
-        <div class="navbar-header">
+        <div class="navbar-header" style="margin-left: 15px">
           <a class="navbar-brand" style="color: #f7f7f7; font-size: 22px" href="#">
             <img style="height: 120%; display: inline" src="logo.svg">
-            Picaloc
+            SUP!
           </a>
-        </div>
-        <div class="nav navbar-nav navbar-right">
-          <button class="btn navbar-btn" onclick="logout()">
-            Log out <span class="glyphicon glyphicon-log-out"></span>
-          </button>
         </div>
       </div>
     </nav>
@@ -46,8 +41,5 @@
 
   <script src="app/overview/map.directive.js"></script>
   <script src="app/overview/overview.controller.js"></script>
-    <script src="app/overview/thumbnails.service.js"></script>
-
-  <script src="app/login/login.controller.js"></script>
   </body>
 </html>
